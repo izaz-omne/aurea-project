@@ -1,0 +1,23 @@
+# Dependencies and build output
+node_modules/
+.next/
+out/
+build/
+dist/
+
+# Local environment and credentials
+.env*
+!.env.example
+
+# Local tooling state
+.claude/
+.playwright/
+.playwright-cli/
+.taste-skill/
+__pycache__/
+*.py[cod]
+
+# Operating system and editor files
+.DS_Store
+Thumbs.db
+.vscode/
