@@ -3,7 +3,7 @@
 import {
   Activity, Bookmark, Check, ChevronDown, ChevronRight, Cloud, Navigation,
   Compass, Info, LocateFixed, MapPin, Menu, Moon, RefreshCw, Search,
-  Settings2, Sun, X, Wifi, WifiOff, Sunrise, Sunset,
+  Settings2, Sun, X, WifiOff, Sunrise, Sunset,
 } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -219,7 +219,6 @@ export default function ForecastDashboard() {
   const [units, setUnits] = useState<Units>("imperial");
   const [theme, setTheme] = useState<Theme>("daylight");
   const [preferencesReady, setPreferencesReady] = useState(false);
-  const [offline, setOffline] = useState(false);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -254,31 +253,31 @@ export default function ForecastDashboard() {
     setRefreshing(false);
   }, []);
 
-  const refresh = useCallback(async (nextLocation = location, isOffline = offline) => {
+  const refresh = useCallback(async (nextLocation = location) => {
     const request = ++forecastRequest.current;
     if (forecast) setRefreshing(true);
     else setLoading(true);
     setLocationError("");
     try {
-      const next = await loadForecast(nextLocation, isOffline);
+      const next = await loadForecast(nextLocation);
       if (request === forecastRequest.current) applyForecast(next);
     } catch (error: unknown) {
       if (request === forecastRequest.current) {
         const message = error instanceof Error ? error.message : "Unexpected forecast error.";
         const savedReportMatchesLocation = forecast?.location.id === nextLocation.id;
-        setLocationError(`${isOffline ? "Offline forecast unavailable." : "Live forecast unavailable."} ${message}${savedReportMatchesLocation ? " Showing the last successful report." : ""}`);
+        setLocationError(`Live forecast unavailable. ${message}${savedReportMatchesLocation ? " Showing the last successful report." : ""}`);
         setLoading(false);
         setRefreshing(false);
       }
     }
-  }, [applyForecast, forecast, location, offline]);
+  }, [applyForecast, forecast, location]);
 
   useEffect(() => {
     let initialLocation = getDefaultLocation();
     try {
       const settings = localStorage.getItem("aurea.settings");
       if (settings) {
-        const parsed = JSON.parse(settings) as { mode?: ShootMode; units?: Units; theme?: Theme; offline?: boolean };
+        const parsed = JSON.parse(settings) as { mode?: ShootMode; units?: Units; theme?: Theme };
         if (parsed.mode && modes.some((item) => item.id === parsed.mode)) setMode(parsed.mode);
         if (parsed.units === "metric" || parsed.units === "imperial") setUnits(parsed.units);
         if (parsed.theme && ["daylight", "darkroom", "astro"].includes(parsed.theme)) setTheme(parsed.theme);
@@ -298,7 +297,7 @@ export default function ForecastDashboard() {
     } finally {
       setPreferencesReady(true);
     }
-    void refresh(readCachedForecast(initialLocation.id)?.location ?? initialLocation, false);
+    void refresh(readCachedForecast(initialLocation.id)?.location ?? initialLocation);
   // Load the current saved report once on entry.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -307,8 +306,8 @@ export default function ForecastDashboard() {
     if (!preferencesReady) return;
     document.documentElement.dataset.theme = theme;
     document.documentElement.style.colorScheme = theme === "daylight" ? "light" : "dark";
-    try { localStorage.setItem("aurea.settings", JSON.stringify({ mode, units, theme, offline })); } catch { /* optional preference */ }
-  }, [mode, units, theme, offline, preferencesReady]);
+    try { localStorage.setItem("aurea.settings", JSON.stringify({ mode, units, theme })); } catch { /* optional preference */ }
+  }, [mode, units, theme, preferencesReady]);
 
   useEffect(() => {
     if (!searchOpen || query.trim().length < 2) { setSuggestions([]); setSearchError(""); setSearchLoading(false); return; }
@@ -361,7 +360,7 @@ export default function ForecastDashboard() {
     setLoading(!cached);
     setRefreshing(Boolean(cached));
     try { localStorage.setItem("aurea.location", JSON.stringify(next)); } catch { setToast("This browser could not save the location preference."); }
-    void refresh(next, offline);
+    void refresh(next);
   };
 
   const toggleSaved = () => {
@@ -385,14 +384,11 @@ export default function ForecastDashboard() {
     }
   };
 
-  const toggleOffline = () => {
-    const next = !offline;
-    setOffline(next);
-    void refresh(location, next);
-    setToast(next
-      ? readCachedForecast(location.id) ? "Offline view on. Showing your last saved forecast." : "Offline view on. No saved forecast is available for this place."
-      : "Back online. Checking for a fresh forecast…");
-  };
+  const themeOptions: Theme[] = ["daylight", "darkroom", "astro"];
+  const themeLabels: Record<Theme, string> = { daylight: "Daylight", darkroom: "Darkroom", astro: "Astro red" };
+  const nextTheme = themeOptions[(themeOptions.indexOf(theme) + 1) % themeOptions.length];
+  const themeIcon = theme === "daylight" ? <Sun size={15} aria-hidden="true" /> : theme === "darkroom" ? <Moon size={15} aria-hidden="true" /> : <Compass size={15} aria-hidden="true" />;
+  const cycleTheme = () => setTheme(nextTheme);
 
   const goToWeek = () => {
     document.getElementById("week-ahead")?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -465,9 +461,9 @@ export default function ForecastDashboard() {
               <button className="topbar-search" onClick={openSearch}><Search size={16} aria-hidden="true" /><span>Find a place</span><kbd>/</kbd></button>
             )}
             <button className="icon-button locate-button" aria-label="Use current location" title="Use current location" onClick={() => void requestCurrentLocation()}><LocateFixed size={17} /></button>
-            <button className={`offline-button ${offline ? "offline-on" : ""}`} onClick={toggleOffline} aria-pressed={offline}>
-              {offline ? <WifiOff size={15} aria-hidden="true" /> : <Wifi size={15} aria-hidden="true" />}
-              <span>{offline ? "Offline" : "Online"}</span>
+            <button className="theme-button" onClick={cycleTheme} aria-label={`Change theme. Current theme: ${themeLabels[theme]}`} title={`Theme: ${themeLabels[theme]}`}>
+              {themeIcon}
+              <span>{themeLabels[theme]}</span>
             </button>
           </div>
         </header>
@@ -482,7 +478,7 @@ export default function ForecastDashboard() {
               <button className={`save-button ${savedPlaces.some((place) => place.id === location.id) ? "is-saved" : ""}`} onClick={toggleSaved} aria-pressed={savedPlaces.some((place) => place.id === location.id)}>
                 <Bookmark size={15} aria-hidden="true" />{savedPlaces.some((place) => place.id === location.id) ? "Saved" : "Save place"}
               </button>
-              <button className="icon-button refresh-button" aria-label="Refresh forecast" title="Refresh forecast" onClick={() => void refresh()} disabled={refreshing || offline}><RefreshCw size={16} className={refreshing ? "spin" : ""} /></button>
+              <button className="icon-button refresh-button" aria-label="Refresh forecast" title="Refresh forecast" onClick={() => void refresh()} disabled={refreshing}><RefreshCw size={16} className={refreshing ? "spin" : ""} /></button>
             </div>
           </div>
 
@@ -490,7 +486,7 @@ export default function ForecastDashboard() {
             <div className={`data-notice ${locationError ? "notice-error" : ""}`} role="status" aria-live="polite">
               {locationError ? <Info size={15} aria-hidden="true" /> : forecast?.source === "cached" ? <WifiOff size={15} aria-hidden="true" /> : <Info size={15} aria-hidden="true" />}
               <span>{locationError || (forecast?.source === "cached" ? "Offline data · last saved forecast" : "Sample conditions · live forecast unavailable")}</span>
-              {!offline && (locationError || forecast?.source !== "live") && <button onClick={() => void refresh()}>Retry</button>}
+              {(locationError || forecast?.source !== "live") && <button onClick={() => void refresh()}>Retry</button>}
             </div>
           )}
 

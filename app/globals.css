@@ -147,9 +147,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .topbar-search kbd { margin-left: auto; padding: 1px 5px; border: 1px solid var(--border); border-radius: 3px; color: var(--faint); font-family: var(--font-data); font-size: 11px; }
 .icon-button { display: grid; width: 38px; height: 38px; flex: none; place-items: center; border: 1px solid transparent; border-radius: var(--radius); background: transparent; color: var(--muted); cursor: pointer; transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease; }
 .icon-button:hover { border-color: var(--border); background: var(--panel); color: var(--ink); }
-.offline-button { display: flex; min-height: 36px; align-items: center; gap: 7px; padding: 0 10px; border: 1px solid var(--border); border-radius: var(--radius); background: transparent; color: var(--muted); font-size: 12px; cursor: pointer; transition: border-color 150ms ease, background-color 150ms ease, color 150ms ease; }
-.offline-button:hover { border-color: var(--control); color: var(--ink); }
-.offline-on { border-color: var(--accent); background: var(--accent-soft); color: var(--accent-ink); }
+.theme-button { display: flex; min-height: 36px; align-items: center; gap: 7px; padding: 0 10px; border: 1px solid var(--border); border-radius: var(--radius); background: transparent; color: var(--muted); font-size: 12px; cursor: pointer; transition: border-color 150ms ease, background-color 150ms ease, color 150ms ease; }
+.theme-button:hover { border-color: var(--control); background: var(--panel); color: var(--ink); }
 .search-box { position: relative; display: flex; width: min(350px, 36vw); height: 38px; align-items: center; gap: 9px; padding: 0 9px; border: 1px solid var(--accent); border-radius: var(--radius); background: var(--surface); color: var(--muted); }
 .search-box:focus-within { outline: 2px solid var(--accent-bright); outline-offset: 2px; }
 .search-box input { width: 100%; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--ink); font-size: 13px; }
@@ -376,8 +375,8 @@ h1, h2, p { text-wrap: pretty; }
 	.topbar-search { min-width: 44px; width: 44px; height: 44px; justify-content: center; padding: 0; border-color: transparent; background: transparent; }
 	.topbar-search span, .topbar-search kbd { display: none; }
 	.locate-button { width: 44px; height: 44px; }
-	.offline-button { width: 44px; min-height: 44px; justify-content: center; padding: 0; }
-	.offline-button span { display: none; }
+	.theme-button { width: 44px; min-height: 44px; justify-content: center; padding: 0; }
+	.theme-button span { display: none; }
 	.search-box { position: absolute; top: 4px; right: var(--page-pad); left: 51px; width: auto; height: 44px; }
 	.search-close { width: 38px; height: 38px; }
 	.main-content { padding-top: 19px; }
