@@ -58,7 +58,8 @@
 .instrument-summary { min-height: 39px; margin: 8px 0 12px; color: #e3e4de; font-size: 13px; line-height: 1.5; }
 .instrument-window-switch { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 .landing-instrument[data-ui] .instrument-window-switch button { display: flex; min-width: 0; min-height: 47px; flex-direction: column; justify-content: center; gap: 4px; padding: 5px 8px; border: 1px solid rgba(245, 241, 225, .12); border-radius: 3px; background: transparent; color: #c5c8bf; text-align: left; cursor: pointer; transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease; }
-.instrument-window-switch button:hover, .instrument-window-switch button.window-active { border-color: rgba(237, 189, 94, .54); background: var(--landing-soft); color: #f1e5c9; }
+.landing-instrument[data-ui] .instrument-window-switch button:hover:not(.window-active) { border-color: rgba(245, 241, 225, .3); color: #f1f0e9; }
+.landing-instrument[data-ui] .instrument-window-switch button.window-active { border-color: rgba(237, 189, 94, .62); background: var(--landing-soft); color: #f1e5c9; }
 .instrument-window-switch button > span { display: flex; align-items: center; gap: 5px; font-size: 13px; }
 .instrument-window-switch button > span svg { color: var(--landing-accent-bright); }
 .instrument-window-switch button > b { color: #efeee6; font-size: 13px; font-weight: 400; font-variant-numeric: tabular-nums; }
@@ -74,7 +75,8 @@
 .instrument-axis { display: flex; justify-content: space-between; margin-top: 2px; color: #d0d3cb; font-size: 13px; font-variant-numeric: tabular-nums; }
 .instrument-modes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; margin-top: 11px; }
 .landing-instrument[data-ui] .instrument-modes button { min-width: 0; min-height: 40px; padding: 4px 6px; border: 1px solid rgba(245, 241, 225, .14); border-radius: 3px; background: transparent; color: #d0d3cb; font-size: 12px; line-height: 1.25; overflow-wrap: anywhere; cursor: pointer; transition: border-color 150ms ease, background-color 150ms ease, color 150ms ease; }
-.instrument-modes button:hover, .instrument-modes button[aria-pressed="true"] { border-color: var(--landing-accent); background: var(--landing-soft); color: #f1e5c9; }
+.landing-instrument[data-ui] .instrument-modes button:hover:not([aria-pressed="true"]) { border-color: rgba(245, 241, 225, .3); color: #f1f0e9; }
+.landing-instrument[data-ui] .instrument-modes button[aria-pressed="true"] { border-color: rgba(237, 189, 94, .62); background: var(--landing-soft); color: #f1e5c9; }
 .landing-instrument[data-ui] .instrument-footer { margin-top: 11px; padding-top: 9px; border-top: 1px solid var(--landing-dark-rule); color: #d0d3cb; font-size: 13px; }
 .instrument-footer > span:first-child { display: flex; align-items: center; gap: 6px; }
 .instrument-live-dot { width: 6px; height: 6px; border-radius: 50%; background: #8ca98d; }
